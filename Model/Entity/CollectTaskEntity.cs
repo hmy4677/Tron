@@ -7,7 +7,6 @@ namespace Model.Entity
     {
         [SugarColumn(IsPrimaryKey = true)]
         public long Id { get; set; }
-
         public int Type { get; set; }
         public string? Name { get; set; }
         public string? Describe { get; set; }

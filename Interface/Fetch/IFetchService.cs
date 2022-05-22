@@ -8,6 +8,6 @@ namespace Interface.Fetch
 {
     public interface IFetchService
     {
-        Task<dynamic> ContractFetchAsync(string address);
+        Task ExcuteFetch(string address);
     }
 }
