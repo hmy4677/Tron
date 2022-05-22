@@ -20,6 +20,7 @@
     ]
   },
   "dependencies": {
+    "@ant-design/pro-form": "^1.68.2",
     "@ant-design/pro-layout": "^6.5.0",
     "copy-to-clipboard": "^3.3.1",
     "file-loader": "^6.2.0",

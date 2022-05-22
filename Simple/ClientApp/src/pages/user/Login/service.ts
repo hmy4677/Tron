@@ -1,12 +1,7 @@
-import { extend } from 'umi-request';
+import { request } from 'umi';
 import { ILogin, ILoginResponse } from './typings';
 import { message } from 'antd';
 import { history } from 'umi';
-
-const request = extend({
-    prefix: '/api/user',
-    timeout: 1000 * 10
-});
 
 /**
  * 登录
@@ -14,7 +9,7 @@ const request = extend({
  * @returns 用户信息
  */
 export const login = async (loginInfo: ILogin): Promise<API.ICurrentUser | undefined> => {
-    const result = await request.post<ILoginResponse>('/login', { data: loginInfo });
+    const result = await request<ILoginResponse>('/api/user/login', { data: loginInfo,method:'POST' });
     if (result.succeeded) {
         saveUserInfo(loginInfo.remember, result.data);
         history.replace('/');

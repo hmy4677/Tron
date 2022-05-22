@@ -1,6 +1,6 @@
 ﻿using SqlSugar;
 
-namespace Furion.Core.Entities
+namespace Model.Entity
 {
     [SugarTable("C_Base", IsDisabledUpdateAll = true)]
     public class ContractBaseEntity : CollectBaseEntity

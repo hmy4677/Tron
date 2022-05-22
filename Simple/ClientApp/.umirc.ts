@@ -11,7 +11,8 @@ export default defineConfig({
       path: '/',
       component: '@/layout',
       routes: [
-        { path: '/', component: '@/pages/index' },
+        { exact: true, path: '/', redirect: '/mission' },
+        { exact: true, path: '/mission', name: 'Mission', component: '@/pages/mission' },
         { component: '@/pages/404' }
       ]
     },
@@ -39,7 +40,7 @@ export default defineConfig({
       page: 1,
       pageSize: 20
     },
-    websiteTitle:'Simple'
+    websiteTitle: 'Tron'
   },
   chainWebpack(memo) {
     memo.module

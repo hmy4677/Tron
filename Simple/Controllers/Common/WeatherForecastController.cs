@@ -5,7 +5,7 @@ using Model.Common;
 
 namespace Simple.Controllers.Common
 {
-    [AllowAnonymous]
+    //[AllowAnonymous]
     [ApiController]
     [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase

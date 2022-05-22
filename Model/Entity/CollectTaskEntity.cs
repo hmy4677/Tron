@@ -1,6 +1,6 @@
 ﻿using SqlSugar;
 
-namespace Furion.Core.Entities
+namespace Model.Entity
 {
     [SugarTable("CollectTasks")]
     public class CollectTaskEntity

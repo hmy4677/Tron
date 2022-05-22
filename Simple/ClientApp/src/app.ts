@@ -1,7 +1,7 @@
 import { history } from 'umi';
 import type { ResponseError, RequestOptionsInit } from 'umi-request';
 import type { RequestConfig } from 'umi';
-import { notification, message } from 'antd';
+import { notification } from 'antd';
 import moment from 'moment';
 
 /**
@@ -128,6 +128,7 @@ const responseInterceptor = (response: Response) => {
 
 //请求配置
 export const request: RequestConfig = {
+    timeout: 1000 * 10,
     requestInterceptors: [requestInterceptor],
     responseInterceptors: [responseInterceptor]
 };

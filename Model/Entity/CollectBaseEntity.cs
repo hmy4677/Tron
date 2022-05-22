@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Furion.Core.Entities
+namespace Model.Entity
 {
     public class CollectBaseEntity
     {
