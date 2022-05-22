@@ -6,6 +6,9 @@ using Model.Dto;
 
 namespace Simple.Controllers.User
 {
+    /// <summary>
+    /// 用户控制器
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -19,6 +22,11 @@ namespace Simple.Controllers.User
             _httpContextAccessor = httpContextAccessor;
         }
 
+        /// <summary>
+        /// 登录
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<dynamic> Login([FromBody] LoginInput input)
@@ -35,20 +43,34 @@ namespace Simple.Controllers.User
             return user;
         }
 
+        /// <summary>
+        /// 删除用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public bool Del(long id)
         {
             return _service.DeleteUser(id);
         }
 
-        [AllowAnonymous]
+        /// <summary>
+        /// 新增用户
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<bool> AddNewUser([FromBody] UserAddInput input)
         {
             return await _service.AddUser(input);
         }
 
-        [AllowAnonymous]
+        /// <summary>
+        /// 修改用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<int> UpdateUser(long id, [FromBody] UserInfo info)
         {
