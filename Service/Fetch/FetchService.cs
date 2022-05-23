@@ -23,7 +23,14 @@ namespace Furion.Application.Implement.Fetch
         public async Task ExcuteFetch(string address)
         {
 #if DEBUG
-            _db.CodeFirst.SetStringDefaultLength(50).InitTables<ContractBaseEntity, ContractTokenEntity>();
+            //_db.CodeFirst.SetStringDefaultLength(50).InitTables<ContractBaseEntity, ContractTokenEntity, ContractTransactionEntity, ContractTransferEntity>();
+            //_db.CodeFirst.SetStringDefaultLength(50).InitTables<ContractInternalEntity, ContractEventEntity, ContractTrackBaseEntity, ContractTrackTransferEntity>();
+            //_db.CodeFirst.SetStringDefaultLength(50).InitTables<ContractTrackHolderEntity>();
+
+            Type[] types = typeof(ContractBaseEntity).Assembly.GetTypes()
+                .Where(it => it.FullName.Contains("Entity"))
+                .ToArray();
+            _db.CodeFirst.SetStringDefaultLength(50).InitTables(types);
 #endif
             var task = await _db.Queryable<CollectTaskEntity>().FirstAsync(p => p.CollectAddress == address);
             var fetchId = YitIdHelper.NextId();
@@ -35,6 +42,9 @@ namespace Furion.Application.Implement.Fetch
             await FetchTrasfer(address, fetchId, nowTime, 0, 20);
             await FetchInternal(address, fetchId, nowTime, 0, 20);
             await FetchEvent(address, fetchId, nowTime);
+            await FetchTrackBase(address, fetchId, nowTime);
+            await FetchTrackTransfer(address, fetchId, nowTime, 0, 20);
+            await FetchTrackHolder(address, fetchId, nowTime, 0, 20);
 
             task.LastCollectTime = nowTime;
             await _db.Updateable(task).ExecuteCommandAsync();
@@ -126,12 +136,12 @@ namespace Furion.Application.Implement.Fetch
         {
             var url = $"https://apilist.tronscan.org/api/contracts/smart-contract-triggers-batch?fields=hash,method";
             var body = new { contractAddress = address };
-            var response =await url.SetBody(body).PostAsAsync<EventList>();
+            var response = await url.SetBody(body).PostAsAsync<EventList>();
             foreach (var item in response.event_list)
             {
                 var newEvent = item.Adapt<ContractEventEntity>();
                 newEvent.Id = YitIdHelper.NextId();
-                newEvent.RelationId=relationId;
+                newEvent.RelationId = relationId;
                 newEvent.CollectTime = fetchTime;
                 newEvent.zero = item.result.zero;
                 newEvent.two = item.result.two;
@@ -143,6 +153,52 @@ namespace Furion.Application.Implement.Fetch
                 newEvent.owner = item.result.owner;
 
                 await _db.Insertable(newEvent).ExecuteCommandAsync();
+            }
+        }
+
+        public async Task FetchTrackBase(string address, long relationId, DateTime fetchTime)
+        {
+            var url = $"https://apilist.tronscan.org/api/token_trc20?contract={address}&showAll=1";
+            var response = await url.GetAsAsync<ContractTrackBase>();
+            var data = response.trc20_tokens.FirstOrDefault();
+            _ = data ?? throw Oops.Oh("data is null");
+            var newTrackbase = data.Adapt<ContractTrackBaseEntity>();
+            newTrackbase.Id = YitIdHelper.NextId();
+            newTrackbase.RelationId = relationId;
+            newTrackbase.CollectTime = fetchTime;
+            newTrackbase.tokenPrice = data.tokenPriceLine.data.Average(p => p.priceUsd);
+
+            await _db.Insertable(newTrackbase).ExecuteCommandAsync();
+        }
+
+        public async Task FetchTrackTransfer(string address, long relationId, DateTime fetchTime, int start, int limit)
+        {
+            var url = $"https://apilist.tronscan.org/api/token_trc20/transfers?limit={limit}&start={start}&contract_address={address}";
+            var response = await url.GetAsAsync<ContractTrackTransfer>();
+            foreach (var item in response.token_transfers)
+            {
+                var newTransfer = item.Adapt<ContractTrackTransferEntity>();
+                newTransfer.Id = YitIdHelper.NextId();
+                newTransfer.CollectTime = fetchTime;
+                newTransfer.RelationId = relationId;
+                newTransfer.hash = item.tokenInfo.transaction_id;
+
+                await _db.Insertable(newTransfer).ExecuteCommandAsync();
+            }
+        }
+
+        public async Task FetchTrackHolder(string address, long relationId, DateTime fetchTime, int start, int limit)
+        {
+            var url = $"https://apilist.tronscan.org/api/token_trc20/holders?sort=-balance&start={start}&limit={limit}&contract_address={address}";
+            var response = await url.GetAsAsync<ContractTrackHolder>();
+            foreach (var item in response.trc20_tokens)
+            {
+                var newHolder = item.Adapt<ContractTrackHolderEntity>();
+                newHolder.Id = YitIdHelper.NextId();
+                newHolder.CollectTime = fetchTime;
+                newHolder.RelationId = relationId;
+
+                await _db.Insertable(newHolder).ExecuteCommandAsync();
             }
         }
     }
