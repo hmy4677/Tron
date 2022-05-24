@@ -16,6 +16,7 @@ namespace Model.Dto.Fetch
 
     public class TrackTransfer
     {
+        public string transaction_id { get; set; }
         public string quant { get; set; }
         public string contractRet { get; set; }
         public bool confirmed { get; set; }
@@ -23,7 +24,6 @@ namespace Model.Dto.Fetch
         public long block_ts { get; set; }
         public string from_address { get; set; }
         public string to_address { get; set; }
-        public TrackInfo tokenInfo { get; set; }
     }
 
     public class TrackInfo

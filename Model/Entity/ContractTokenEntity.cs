@@ -2,7 +2,7 @@
 
 namespace Model.Entity
 {
-    [SugarTable("C_Token")]
+    [SugarTable("C_Token", IsDisabledUpdateAll = true)]
     public class ContractTokenEntity : CollectBaseEntity
     {
         [SugarColumn(ColumnDataType = "decimal(18,6)")]
@@ -18,6 +18,8 @@ namespace Model.Entity
         public int TokenCanShow { get; set; }
         public int TokenDecimal { get; set; }
         public string TokenId { get; set; }
+
+        [SugarColumn(ColumnDataType ="varchar(128)")]
         public string TokenLogo { get; set; }
         public string TokenName { get; set; }
 

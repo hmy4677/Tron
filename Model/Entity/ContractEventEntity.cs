@@ -18,22 +18,24 @@ namespace Model.Entity
 
         public string event_name { get; set; }
 
-        [SugarColumn(ColumnDataType = "varchar(128)")]
-        public string zero { get; set; }
+        [SugarColumn(ColumnDataType = "varchar(128)", IsNullable = true)]
+        public string? zero { get; set; }
 
-        [SugarColumn(ColumnDataType = "varchar(128)")]
-        public string one { get; set; }
+        [SugarColumn(ColumnDataType = "varchar(128)", IsNullable = true)]
+        public string? one { get; set; }
 
-        [SugarColumn(ColumnDataType = "varchar(128)")]
-        public string two { get; set; }
+        [SugarColumn(ColumnDataType = "varchar(128)", IsNullable = true)]
+        public string? two { get; set; }
 
         [SugarColumn(ColumnDataType = "varchar(128)", IsNullable = true)]
         public string owner { get; set; }
 
         [SugarColumn(ColumnDataType = "varchar(128)", IsNullable = true)]
         public string spender { get; set; }
+
         [SugarColumn(ColumnDataType = "varchar(128)", IsNullable = true)]
         public string from { get; set; }
+
         [SugarColumn(ColumnDataType = "varchar(128)", IsNullable = true)]
         public string to { get; set; }
 

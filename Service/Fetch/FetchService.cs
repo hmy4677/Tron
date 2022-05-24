@@ -11,7 +11,7 @@ using Yitter.IdGenerator;
 
 namespace Furion.Application.Implement.Fetch
 {
-    internal class FetchService : IFetchService, ITransient
+    public class FetchService : IFetchService, ITransient
     {
         private readonly SqlSugarProvider _db;
 
@@ -20,13 +20,9 @@ namespace Furion.Application.Implement.Fetch
             _db = DbScoped.SugarScope.GetConnection("db1");
         }
 
-        public async Task ExcuteFetch(string address)
+        public async Task ExcuteFetch(string address, int start, int limit)
         {
 #if DEBUG
-            //_db.CodeFirst.SetStringDefaultLength(50).InitTables<ContractBaseEntity, ContractTokenEntity, ContractTransactionEntity, ContractTransferEntity>();
-            //_db.CodeFirst.SetStringDefaultLength(50).InitTables<ContractInternalEntity, ContractEventEntity, ContractTrackBaseEntity, ContractTrackTransferEntity>();
-            //_db.CodeFirst.SetStringDefaultLength(50).InitTables<ContractTrackHolderEntity>();
-
             Type[] types = typeof(ContractBaseEntity).Assembly.GetTypes()
                 .Where(it => it.FullName.Contains("Entity"))
                 .ToArray();
@@ -38,13 +34,17 @@ namespace Furion.Application.Implement.Fetch
 
             await FetchBase(address, fetchId, task.Id, nowTime);
             await FetchToken(address, fetchId, nowTime);
-            await FetchTransaction(address, fetchId, nowTime, 0, 20);
-            await FetchTrasfer(address, fetchId, nowTime, 0, 20);
-            await FetchInternal(address, fetchId, nowTime, 0, 20);
             await FetchEvent(address, fetchId, nowTime);
             await FetchTrackBase(address, fetchId, nowTime);
-            await FetchTrackTransfer(address, fetchId, nowTime, 0, 20);
-            await FetchTrackHolder(address, fetchId, nowTime, 0, 20);
+
+            for (int i = start; i < limit / 50; i++)
+            {
+                await FetchTransaction(address, fetchId, nowTime, i, 50);
+                await FetchTrasfer(address, fetchId, nowTime, i, 50);
+                await FetchInternal(address, fetchId, nowTime, i, 50);
+                await FetchTrackTransfer(address, fetchId, nowTime, i, 50);
+                await FetchTrackHolder(address, fetchId, nowTime, i, 50);
+            }
 
             task.LastCollectTime = nowTime;
             await _db.Updateable(task).ExecuteCommandAsync();
@@ -85,6 +85,7 @@ namespace Furion.Application.Implement.Fetch
 
         public async Task FetchTransaction(string address, long relationId, DateTime fetchTime, int start, int limit)
         {
+
             var url = $"https://apilist.tronscan.org/api/transaction?sort=-timestamp&count=true&limit={limit}&start={start}&address={address}";
             var response = await url.GetAsAsync<ContractTransaction>();
             foreach (var item in response.Data)
@@ -124,7 +125,7 @@ namespace Furion.Application.Implement.Fetch
             {
                 var newInter = item.Adapt<ContractInternalEntity>();
                 newInter.Id = YitIdHelper.NextId();
-                newInter.token = item.token_list.tokenName;
+                newInter.token = item.token_list.tokenInfo.tokenName;
                 newInter.RelationId = relationId;
                 newInter.CollectTime = fetchTime;
 
@@ -143,8 +144,9 @@ namespace Furion.Application.Implement.Fetch
                 newEvent.Id = YitIdHelper.NextId();
                 newEvent.RelationId = relationId;
                 newEvent.CollectTime = fetchTime;
+                //newEvent = item.result.Adapt<ContractEventEntity>();
                 newEvent.zero = item.result.zero;
-                newEvent.two = item.result.two;
+                newEvent.one = item.result.one;
                 newEvent.two = item.result.two;
                 newEvent.value = item.result.value;
                 newEvent.from = item.result.from;
@@ -181,7 +183,6 @@ namespace Furion.Application.Implement.Fetch
                 newTransfer.Id = YitIdHelper.NextId();
                 newTransfer.CollectTime = fetchTime;
                 newTransfer.RelationId = relationId;
-                newTransfer.hash = item.tokenInfo.transaction_id;
 
                 await _db.Insertable(newTransfer).ExecuteCommandAsync();
             }

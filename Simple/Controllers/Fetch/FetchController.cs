@@ -17,10 +17,9 @@ namespace Simple.Controllers.Fetch
         }
 
         [HttpGet]
-        public async Task<dynamic> FetchStart(string address)
+        public async Task FetchStart(string address, int start, int limit)
         {
-            var data = _service.ContractFetchAsync(address);
-            return data;
+            await _service.ExcuteFetch(address, start, limit);
         }
     }
 }

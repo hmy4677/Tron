@@ -15,7 +15,7 @@ namespace Model.Dto.Fetch
 
     public class Trc20Token
     {
-        public string blance { get; set; }
+        public string balance { get; set; }
         public bool foundationTag { get; set; }
         public string holder_address { get; set; }
         public string srName { get; set; }

@@ -8,6 +8,6 @@ namespace Interface.Fetch
 {
     public interface IFetchService
     {
-        Task ExcuteFetch(string address);
+        Task ExcuteFetch(string address,int start,int limit);
     }
 }

@@ -1,9 +1,4 @@
 ﻿using SqlSugar;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Model.Entity
 {
@@ -15,8 +10,10 @@ namespace Model.Entity
     {
         public string Account { get; set; }
         public string Name { get; set; }
-        [SugarColumn(ColumnDataType ="varchar(128)")]
+
+        [SugarColumn(ColumnDataType = "varchar(128)")]
         public string Password { get; set; }
+
         [SugarColumn(IsNullable = true)]
         public string AvatarUrl { get; set; }
     }

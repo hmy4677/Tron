@@ -2,11 +2,12 @@
 
 namespace Model.Entity
 {
-    [SugarTable("C_Transaction",IsDisabledUpdateAll =true)]
+    [SugarTable("C_Transaction", IsDisabledUpdateAll = true)]
     public class ContractTransactionEntity : CollectBaseEntity
     {
-        [SugarColumn(ColumnDataType ="varchar(128)")]
+        [SugarColumn(ColumnDataType = "varchar(128)")]
         public string Hash { get; set; }
+
         public int Block { get; set; }
 
         [SugarColumn(ColumnDataType = "bigint")]

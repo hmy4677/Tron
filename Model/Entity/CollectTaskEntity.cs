@@ -2,11 +2,12 @@
 
 namespace Model.Entity
 {
-    [SugarTable("CollectTasks")]
+    [SugarTable("CollectTasks", IsDisabledUpdateAll = true)]
     public class CollectTaskEntity
     {
         [SugarColumn(IsPrimaryKey = true)]
         public long Id { get; set; }
+
         public int Type { get; set; }
         public string? Name { get; set; }
         public string? Describe { get; set; }
